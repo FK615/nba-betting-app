@@ -9,12 +9,12 @@ app = Flask(__name__, template_folder="templates")  # ✅ Ensures Flask looks fo
 from rich.console import Console
 from rich.table import Table
 
-# Load API Key from Railway Environment Variables
+# Load API Key from Environment Variables
 BALLDONTLIE_API_KEY = os.getenv("BALLDONTLIE_API_KEY")
+print(f"⚠️ API Key Loaded: {BALLDONTLIE_API_KEY}")  # ✅ Debugging step
 
-# ✅ Only set headers if an API key exists
+# Ensure the API key is included in headers
 BALLDONTLIE_HEADERS = {"Authorization": f"Bearer {BALLDONTLIE_API_KEY}"} if BALLDONTLIE_API_KEY else {}
-
 
 # Flask App Setup
 app = Flask(__name__)
@@ -25,33 +25,14 @@ import requests
 from requests.exceptions import RequestException
 
 def get_all_nba_players():
-    """Fetches all active NBA players using API calls with retry logic."""
-    players = []
-    page = 1
-    max_pages = 10  # Limit pages to prevent infinite loops
+    url = "https://api.balldontlie.io/v1/players?page=1&per_page=100"
+    print(f"Fetching data from: {url}")  # ✅ Debugging step
+    response = requests.get(url, headers=BALLEDONTLIE_HEADERS, timeout=3)
 
-    while page <= max_pages:
-        url = "https://api.balldontlie.io/v1/players?page=1&per_page=100"
-        try:
-            response = requests.get(url, timeout=3)
-            response.raise_for_status()
-        except RequestException as e:
-            print(f"Error fetching player list (page {page}): {e}")
-            break  # Stop retrying if the API is failing
-
-        data = response.json()
-        if not data.get("data"):
-            break  # No more players to fetch
-
-        players.extend(
-            {"id": player["id"], "name": f"{player['first_name']} {player['last_name']}"}
-            for player in data["data"]
-            if player.get("team")  # Only include players with a team
-        )
-
-        page += 1
-
-    return players
+    if response.status_code == 401:
+        print("⚠️ ERROR: Unauthorized. Check API key or permissions.")
+    
+    return response.json()
 
 
 # Get Player Stats
