@@ -11,10 +11,12 @@ from rich.table import Table
 
 # Load API Key from Environment Variables
 BALLDONTLIE_API_KEY = os.getenv("BALLDONTLIE_API_KEY")
-print(f"⚠️ API Key Loaded: {BALLDONTLIE_API_KEY}")  # ✅ Debugging step
 
-# Ensure the API key is included in headers
-BALLDONTLIE_HEADERS = {"Authorization": f"Bearer {BALLDONTLIE_API_KEY}"} if BALLDONTLIE_API_KEY else {}
+# Ensure API key is included properly
+BALLDONTLIE_HEADERS = {
+    "Authorization": f"Bearer {BALLDONTLIE_API_KEY}",
+    "Accept": "application/json"
+} if BALLDONTLIE_API_KEY else {}
 
 # Flask App Setup
 app = Flask(__name__)
