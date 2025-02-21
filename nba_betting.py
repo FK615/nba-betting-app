@@ -1,15 +1,16 @@
 import os
 import requests
 from flask import Flask, render_template, jsonify
-
+from requests.exceptions import RequestException  # ✅ Fix missing import 
 app = Flask(__name__)
 
 # Load API Key from Environment Variables (API-NBA)
 API_NBA_KEY = os.getenv("API_NBA_KEY")  # Secure API key handling
 
 HEADERS = {
+    HEADERS = {
     "x-rapidapi-host": "api-nba-v1.p.rapidapi.com",
-    "x-rapidapi-key": API_NBA_KEY
+    "x-rapidapi-key": os.getenv("API_NBA_KEY")
 }
 
 # Fetch NBA Players from API-NBA
