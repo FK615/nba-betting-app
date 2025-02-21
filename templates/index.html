@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NBA Bets</title>
+</head>
+<body>
+    <h1>Top 10 NBA Player Over Bets</h1>
+    <ul>
+        {% for bet in bets %}
+            <li>{{ bet['name'] }} - Over {{ bet['stat'] }} (Projected: {{ bet['projection'] }})</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
