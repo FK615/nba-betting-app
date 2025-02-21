@@ -1,40 +1,35 @@
-import os  # ✅ This ensures 'os' is recognized in your script
+import os
 import requests
-import pandas as pd
-import datetime
-from bs4 import BeautifulSoup
-from flask import Flask, render_template
+from flask import Flask, jsonify
 
-app = Flask(__name__, template_folder="templates")  # ✅ Ensures Flask looks for templates here
-from rich.console import Console
-from rich.table import Table
-
-# Load API Key from Environment Variables
-BALLDONTLIE_API_KEY = os.getenv("BALLDONTLIE_API_KEY")
-
-# Ensure API key is included properly
-BALLDONTLIE_HEADERS = {
-    "Authorization": f"Bearer {BALLDONTLIE_API_KEY}",
-    "Accept": "application/json"
-} if BALLDONTLIE_API_KEY else {}
-
-# Flask App Setup
 app = Flask(__name__)
 
-# Get All Active NBA Players
+# Load API Key from Environment Variables (API-NBA)
+API_NBA_KEY = os.getenv("API_NBA_KEY")  # Secure API key handling
 
-import requests
-from requests.exceptions import RequestException
+HEADERS = {
+    "x-rapidapi-host": "api-nba-v1.p.rapidapi.com",
+    "x-rapidapi-key": API_NBA_KEY
+}
 
+# Fetch NBA Players from API-NBA
 def get_all_nba_players():
-    url = "https://api.balldontlie.io/v1/players?page=1&per_page=100"
-    print(f"Fetching data from: {url}")  # ✅ Debugging step
-    response = requests.get(url, headers=BALLEDONTLIE_HEADERS, timeout=3)
+    url = "https://api-nba-v1.p.rapidapi.com/players"
+    response = requests.get(url, headers=HEADERS, timeout=5)
 
-    if response.status_code == 401:
-        print("⚠️ ERROR: Unauthorized. Check API key or permissions.")
+    if response.status_code != 200:
+        return {"error": f"API request failed with status {response.status_code}"}
     
     return response.json()
+
+# Flask Route to Fetch NBA Players
+@app.route("/players", methods=["GET"])
+def players():
+    data = get_all_nba_players()
+    return jsonify(data)
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 
 # Get Player Stats
